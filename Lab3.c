@@ -13,6 +13,9 @@ int main() {
     int timesToLoop;
 
     // init temp variables
+    int fileHandleArr[255], fileSize[255], fileStartingBlockLocation[255];
+    int fileHandleCounter=0;
+
 
     int tempBlockLocationCounter = 0;
     char *userInput = malloc(MAX_NAME_SZ);
@@ -47,7 +50,7 @@ int main() {
     printf("Number of block = %d\n", timesToLoop);
     fgets(userInput, MAX_NAME_SZ, stdin);
     while (!strstr(userInput, "-1")) {
-        int fileHandleArr[255], fileSize[255];
+
         int fileHandle, sizeOfFile;
         char *firstInt;
         char *secondInt;
@@ -68,6 +71,7 @@ int main() {
 
         // if string contains add
         if (strstr(userInput, "add")) {
+            int timesToLoopDueToSizeReq=0;
             int tempCount = 0;
             // getting index of the 2 spaces
             for (int i = 0; i < userInputLen; ++i) {
@@ -108,23 +112,44 @@ int main() {
             fileHandle = atoi(firstInt);
             sizeOfFile = atoi(secondInt);
 
+            int secondIntClone = sizeOfFile;
+            while(secondIntClone>0){
+                secondIntClone = secondIntClone-blockSize;
+                timesToLoopDueToSizeReq++;
+            }
             // delete ltr
             printf("%d\n", fileHandle);
             printf("%d\n", sizeOfFile);
+            printf("%d\n", timesToLoopDueToSizeReq);
 
             // finding for empty locations
+            int looped = 0;
             for (int j = 0; j < timesToLoop; ++j) {
                 int boolFirstAvalLocation = 0;
+
                 for (int k = 0; k < blockSize; ++k) {
 //                    printf("%d\n", storage[blockLocations[j] + k]);
                     if (storage[blockLocations[j] + k] != 0) {
                         boolFirstAvalLocation = 1;
                     }
                 }
-                if (boolFirstAvalLocation == 0) {
 
+                if (boolFirstAvalLocation == 0 && looped==timesToLoopDueToSizeReq) {
+                    fileStartingBlockLocation[fileHandleCounter] = blockLocations[j];
+                    fileHandleArr[fileHandleCounter] = fileHandle;
+                    fileSize[fileHandleCounter] = sizeOfFile;
+                    for (int adding = 0; adding < sizeOfFile; ++adding) {
+                        storage[blockLocations[j]]=fileHandle+adding;
+                    }
+                    fileHandleCounter++;
                 }
 
+                looped++;
+            }
+            printf("______________\n");
+            for (int m = 0; m <256; ++m) {
+
+                printf("%d\n", storage[m]);
 
             }
         }
