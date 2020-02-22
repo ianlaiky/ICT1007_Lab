@@ -122,30 +122,54 @@ int main() {
             printf("%d\n", sizeOfFile);
             printf("%d\n", timesToLoopDueToSizeReq);
 
+            int seekloop = timesToLoopDueToSizeReq*blockSize;
+            int currentSeekLocation=0;
+            int outofspace = 0;
+
             // finding for empty locations
-            int looped = 0;
-            for (int j = 0; j < timesToLoop; ++j) {
+            int seektimes = 256/seekloop;
+            for (int j = 0; j < seektimes; ++j) {
                 int boolFirstAvalLocation = 0;
 
-                for (int k = 0; k < blockSize; ++k) {
-//                    printf("%d\n", storage[blockLocations[j] + k]);
-                    if (storage[blockLocations[j] + k] != 0) {
-                        boolFirstAvalLocation = 1;
-                    }
-                }
+                // seeking total amount of times in blocks size, example,
+                // if sizeinput is 13, blocksize is 8, will loop 16 times
+                for (int i = 0; i < seekloop; ++i) {
+                    if(storage[currentSeekLocation]!=0){
+                        boolFirstAvalLocation=1;
 
-                if (boolFirstAvalLocation == 0 && looped==timesToLoopDueToSizeReq) {
-                    fileStartingBlockLocation[fileHandleCounter] = blockLocations[j];
+                    }
+                    currentSeekLocation++;
+                }
+                // continuing from above example, if the space if any 16 blocks is empty
+                // tempseekloc will be the starting location of the empty blocks are
+                if(boolFirstAvalLocation==0){
+                    printf("SEOND WOR:%d\n",currentSeekLocation);
+                    int tempseekloc = currentSeekLocation-seekloop;
+
+                    // saving blocklocation for deletion ltr
+                    fileStartingBlockLocation[fileHandleCounter] =tempseekloc;
+                    // saving handlearr for deletion ltr
                     fileHandleArr[fileHandleCounter] = fileHandle;
+                    // saving filesize for deletion ltr
                     fileSize[fileHandleCounter] = sizeOfFile;
-                    for (int adding = 0; adding < sizeOfFile; ++adding) {
-                        storage[blockLocations[j]]=fileHandle+adding;
-                    }
-                    fileHandleCounter++;
-                }
 
-                looped++;
+                    // populating the storage arr with data
+                    for (int adding = 0; adding < sizeOfFile; ++adding) {
+                        storage[tempseekloc]=fileHandle+adding;
+                        tempseekloc++;
+                    }
+
+                    // for deletion purpose, to find out how many file are in the system
+                    fileHandleCounter++;
+
+                    // break; when data is inputted, get out of loop
+                    break;
+                }
+                // todo: when out of space
+                outofspace=1;
             }
+
+
             printf("______________\n");
             for (int m = 0; m <256; ++m) {
 
