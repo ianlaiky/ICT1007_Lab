@@ -143,6 +143,8 @@ int main() {
                 // continuing from above example, if the space if any 16 blocks is empty
                 // tempseekloc will be the starting location of the empty blocks are
                 if(boolFirstAvalLocation==0){
+                    // must keep setting out of space to 0. wont affect as there is a break
+                    outofspace=0;
                     printf("SEOND WOR:%d\n",currentSeekLocation);
                     int tempseekloc = currentSeekLocation-seekloop;
 
@@ -169,6 +171,10 @@ int main() {
                 outofspace=1;
             }
 
+            if(outofspace==1){
+                printf("Disk is FULL. End of program\n");
+                break;
+            }
 
             printf("______________\n");
             for (int m = 0; m <256; ++m) {
@@ -176,6 +182,7 @@ int main() {
                 printf("%d\n", storage[m]);
 
             }
+
         }
 
 
