@@ -223,6 +223,8 @@ int main() {
                 // if file handle matches what to be deleted
                 if (fileHandleArr[j] == intfileHandleDelete) {
                     printf("fileStartingBlockLocation: %d\n", fileStartingBlockLocation[j]);
+
+                    // todo continue here
                 }
             }
 
