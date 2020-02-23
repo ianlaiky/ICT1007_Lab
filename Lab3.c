@@ -14,7 +14,7 @@ int main() {
 
     // init temp variables
     int fileHandleArr[255], fileSize[255], fileStartingBlockLocation[255];
-    int fileHandleCounter=0;
+    int fileHandleCounter = 0;
 
 
     int tempBlockLocationCounter = 0;
@@ -71,11 +71,11 @@ int main() {
 
         // if string contains add
         if (strstr(userInput, "add")) {
-            int timesToLoopDueToSizeReq=0;
+            int timesToLoopDueToSizeReq = 0;
             int tempCount = 0;
             // getting index of the 2 spaces
             for (int i = 0; i < userInputLen; ++i) {
-//            printf("%d\n",userInput[i]);
+
                 if ((char) userInput[i] == 32) {
                     indexOfSpace[tempCount] = i;
                     tempCount++;
@@ -83,11 +83,11 @@ int main() {
             }
             // getting the 2 int
             // first int
-//        firstInt = malloc(20);
+
             int firstemp = 0;
             int secondtemp = 0;
-            firstInt = malloc((indexOfSpace[1] - indexOfSpace[0]) - 1);
-            secondInt = malloc((userInputLen - indexOfSpace[1]) - 1);
+            firstInt = malloc((indexOfSpace[1] - indexOfSpace[0]));
+            secondInt = malloc((userInputLen - indexOfSpace[1]));
 
 
             // concat first int char
@@ -113,8 +113,8 @@ int main() {
             sizeOfFile = atoi(secondInt);
 
             int secondIntClone = sizeOfFile;
-            while(secondIntClone>0){
-                secondIntClone = secondIntClone-blockSize;
+            while (secondIntClone > 0) {
+                secondIntClone = secondIntClone - blockSize;
                 timesToLoopDueToSizeReq++;
             }
             // delete ltr
@@ -122,34 +122,35 @@ int main() {
             printf("%d\n", sizeOfFile);
             printf("%d\n", timesToLoopDueToSizeReq);
 
-            int seekloop = timesToLoopDueToSizeReq*blockSize;
-            int currentSeekLocation=0;
+            int seekloop = timesToLoopDueToSizeReq * blockSize;
+            int currentSeekLocation = 0;
             int outofspace = 0;
 
             // finding for empty locations
-            int seektimes = 256/seekloop;
+            int seektimes = 256 / seekloop;
             for (int j = 0; j < seektimes; ++j) {
                 int boolFirstAvalLocation = 0;
 
                 // seeking total amount of times in blocks size, example,
                 // if sizeinput is 13, blocksize is 8, will loop 16 times
                 for (int i = 0; i < seekloop; ++i) {
-                    if(storage[currentSeekLocation]!=0){
-                        boolFirstAvalLocation=1;
+                    if (storage[currentSeekLocation] != 0) {
+                        boolFirstAvalLocation = 1;
 
                     }
                     currentSeekLocation++;
                 }
+                printf("SEEK LOCATION NOW: %d\n",currentSeekLocation);
                 // continuing from above example, if the space if any 16 blocks is empty
                 // tempseekloc will be the starting location of the empty blocks are
-                if(boolFirstAvalLocation==0){
+                if (boolFirstAvalLocation == 0) {
                     // must keep setting out of space to 0. wont affect as there is a break
-                    outofspace=0;
-                    printf("SEOND WOR:%d\n",currentSeekLocation);
-                    int tempseekloc = currentSeekLocation-seekloop;
+                    outofspace = 0;
 
+                    int tempseekloc = currentSeekLocation - seekloop;
+                    printf("Writing data at: %d\n", tempseekloc);
                     // saving blocklocation for deletion ltr
-                    fileStartingBlockLocation[fileHandleCounter] =tempseekloc;
+                    fileStartingBlockLocation[fileHandleCounter] = tempseekloc;
                     // saving handlearr for deletion ltr
                     fileHandleArr[fileHandleCounter] = fileHandle;
                     // saving filesize for deletion ltr
@@ -157,7 +158,7 @@ int main() {
 
                     // populating the storage arr with data
                     for (int adding = 0; adding < sizeOfFile; ++adding) {
-                        storage[tempseekloc]=fileHandle+adding;
+                        storage[tempseekloc] = fileHandle + adding;
                         tempseekloc++;
                     }
 
@@ -168,19 +169,57 @@ int main() {
                     break;
                 }
                 // todo: when out of space
-                outofspace=1;
+                outofspace = 1;
             }
 
-            if(outofspace==1){
+            if (outofspace == 1) {
                 printf("Disk is FULL. End of program\n");
                 break;
             }
 
             printf("______________\n");
-            for (int m = 0; m <256; ++m) {
+            for (int m = 0; m < 256; ++m) {
 
                 printf("%d\n", storage[m]);
 
+            }
+
+        } else if (strstr(userInput, "delete")) {
+
+            // temp var
+            int concatCounter = 0;
+            int userDeleteInputSpaceIndex = 0;
+            char *fileHandleDelete;
+            int intfileHandleDelete;
+            // finding location of space
+            for (int i = 0; i < userInputLen; ++i) {
+                if ((char) userInput[i] == 32) {
+                    userDeleteInputSpaceIndex = i;
+                    break;
+                }
+            }
+            // reserving space
+            fileHandleDelete = malloc(userInputLen - userDeleteInputSpaceIndex);
+
+            // concat the char
+            for (int k = (userDeleteInputSpaceIndex + 1); k < (userInputLen); ++k) {
+                fileHandleDelete[concatCounter] = userInput[k];
+                concatCounter++;
+
+            }
+
+            // convert *char to int
+            fileHandleDelete[userInputLen - userDeleteInputSpaceIndex] = '\0';
+            intfileHandleDelete = atoi(fileHandleDelete);
+            printf("Deleting Handle %d\n", intfileHandleDelete);
+
+            // loop thru all the file handles
+            for (int j = 0; j < fileHandleCounter; ++j) {
+                printf("ALL IN CURRENT ARR: %d\n",fileHandleArr[j]);
+                // if file handle matches what to be deleted
+                if(fileHandleArr[j]==intfileHandleDelete){
+                    printf("fileStartingBlockLocation: %d\n",fileStartingBlockLocation[j]);
+                }
             }
 
         }
