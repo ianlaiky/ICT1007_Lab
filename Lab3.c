@@ -130,20 +130,23 @@ int main() {
             int seektimes = 256 / blockSize;
             for (int j = 0; j < seektimes; ++j) {
                 int boolFirstAvalLocation = 0;
-              // add a for loop here that loop times to loop due to size req
-
-              
-                // seeking total amount of times in blocks size, example,
-                // if sizeinput is 13, blocksize is 8, will loop 16 times
-                for (int i = 0; i < blockSize; ++i) {
-                    if (storage[currentSeekLocation] != 0) {
 
 
-                        boolFirstAvalLocation = 1;
 
+                    // seeking total amount of times in blocks size, example,
+                    // if sizeinput is 13, blocksize is 8, will loop 16 times
+                    for (int i = 0; i < blockSize; ++i) {
+                        for (int k = 0; k < sizeOfFile; ++k) {
+                            if (storage[currentSeekLocation+k] != 0) {
+                                boolFirstAvalLocation = 1;
+                            }
+                            if(boolFirstAvalLocation==0){break;}
+                        }
+                        currentSeekLocation++;
                     }
-                    currentSeekLocation++;
-                }
+
+
+
 
                 // continuing from above example, if the space if any 16 blocks is empty
                 // tempseekloc will be the starting location of the empty blocks are
