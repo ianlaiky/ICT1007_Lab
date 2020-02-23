@@ -228,17 +228,30 @@ int main() {
             // convert *char to int
             fileHandleDelete[userInputLen - userDeleteInputSpaceIndex] = '\0';
             intfileHandleDelete = atoi(fileHandleDelete);
-            printf("Deleting Handle %d\n", intfileHandleDelete);
+
 
             // loop thru all the file handles
             for (int j = 0; j < fileHandleCounter; ++j) {
-                printf("ALL IN CURRENT ARR: %d\n", fileHandleArr[j]);
+
                 // if file handle matches what to be deleted
                 if (fileHandleArr[j] == intfileHandleDelete) {
                     printf("fileStartingBlockLocation: %d\n", fileStartingBlockLocation[j]);
+                    printf("File Size: %d\n", fileSize[j]);
+                    for (int i = 0; i < fileSize[j]; ++i) {
+                        storage[fileStartingBlockLocation[j]+i]=0;
+                        
+                    }
 
-                    // todo continue here
+
+
                 }
+
+            }
+
+            printf("______________\n");
+            for (int m = 0; m < 256; ++m) {
+
+                printf("%d\n", storage[m]);
 
             }
 
