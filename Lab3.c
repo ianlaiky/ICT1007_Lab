@@ -143,7 +143,7 @@ int main() {
                     fileSize[fileHandleCounter] = sizeOfFile;
                     // populating the storage arr with data
                     for (int adding = 0; adding < sizeOfFile; ++adding) {
-                        storage[tempseekloc] = fileHandle + adding+1;
+                        storage[tempseekloc] = fileHandle + adding + 1;
                         tempseekloc++;
                     }
 
@@ -162,7 +162,20 @@ int main() {
                 break;
             }
 
+            //             DISPLAY ARRAY
+            printf("_____DISPLAY 256 Array_____\n");
+            int displaycounter = 0;
+            for (int m = 0; m < 256; ++m) {
+                if (displaycounter == blockSize) {
+                    printf("\n");
+                    displaycounter = 0;
+                }
+                printf("%d ", storage[m]);
 
+                displaycounter++;
+            }
+            printf("\n");
+            printf("_____DISPLAY End Of 256 Array_____\n");
         } else if (strstr(userInput, "delete")) {
 
             // temp var
@@ -191,13 +204,15 @@ int main() {
             intfileHandleDelete = atoi(fileHandleDelete);
             // temp variables
             int fileNotFound = 0;
+            int deletesucess = 0;
             // loop thru all the file handles
             for (int j = 0; j < fileHandleCounter; ++j) {
                 // if file handle matches what to be deleted
                 if (fileHandleArr[j] == intfileHandleDelete) {
                     fileNotFound = 0;
                     fileHandleArr[j] = 0;
-                    printf("Deleted Sucessfully\n");
+                    deletesucess = 1;
+
                     for (int i = 0; i < fileSize[j]; ++i) {
                         storage[fileStartingBlockLocation[j] + i] = 0;
 
@@ -206,24 +221,33 @@ int main() {
                 }
                 fileNotFound = 1;
             }
+            if (fileHandleCounter == 0) {
+                fileNotFound = 1;
+            }
+            //             DISPLAY ARRAY
+            printf("_____DISPLAY 256 Array_____\n");
+            int displaycounter = 0;
+            for (int m = 0; m < 256; ++m) {
+                if (displaycounter == blockSize) {
+                    printf("\n");
+                    displaycounter = 0;
+                }
+                printf("%d ", storage[m]);
+
+                displaycounter++;
+            }
+            printf("\n");
+            printf("_____DISPLAY End Of 256 Array_____\n");
             if (fileNotFound == 1) {
                 printf("File not found\n");
             }
-        }
-//             DISPLAY ARRAY
-        printf("_____DISPLAY 256 Array_____\n");
-        int displaycounter = 0;
-        for (int m = 0; m < 256; ++m) {
-            if (displaycounter == blockSize) {
-                printf("\n");
-                displaycounter = 0;
+            if (deletesucess == 1) {
+                printf("Deleted Sucessfully\n");
             }
-            printf("%d ", storage[m]);
 
-            displaycounter++;
+
         }
-        printf("\n");
-        printf("_____DISPLAY End Of 256 Array_____\n");
+
     }
     if (strstr(userInput, "-1")) {
         printf("Terminated by User\n");
