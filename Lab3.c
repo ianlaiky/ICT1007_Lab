@@ -130,7 +130,9 @@ int main() {
             int seektimes = 256 / blockSize;
             for (int j = 0; j < seektimes; ++j) {
                 int boolFirstAvalLocation = 0;
+              // add a for loop here that loop times to loop due to size req
 
+              
                 // seeking total amount of times in blocks size, example,
                 // if sizeinput is 13, blocksize is 8, will loop 16 times
                 for (int i = 0; i < blockSize; ++i) {
