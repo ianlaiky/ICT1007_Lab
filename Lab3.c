@@ -244,13 +244,9 @@ int main() {
             if (deletesucess == 1) {
                 printf("Deleted Sucessfully\n");
             }
-
-
         }
-
     }
     if (strstr(userInput, "-1")) {
         printf("Terminated by User\n");
     }
-
 }
