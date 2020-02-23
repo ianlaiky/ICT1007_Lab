@@ -127,25 +127,21 @@ int main() {
 
 
 
-                // seeking total amount of times in blocks size, example,
-                // if sizeinput is 13, blocksize is 8, will loop 16 times
-//                for (int i = 0; i < blockSize; ++i) {
+                // MAIN LOGIC
+                // for every block size, e.g. blocsize 2, it will check from 0+k(where k is size of file)
+                // iteratively
+                // if there is data in any of that space, it will move file pointer to 2 then 4 and so on
                 for (int k = 0; k < sizeOfFile; ++k) {
-
-
                     if (storage[currentSeekLocation + k] != 0) {
                         boolFirstAvalLocation = 1;
-
                     }
-
                 }
+                // if input data is larger than the avail space itself
                 if ((int) (currentSeekLocation + sizeOfFile) > 256) {
-
                     boolFirstAvalLocation = 1;
-
                 }
                 currentSeekLocation += blockSize;
-//                }
+
 
 
 
@@ -158,7 +154,7 @@ int main() {
                     outofspace = 0;
 
                     int tempseekloc = currentSeekLocation - blockSize;
-//                    printf("Writing data at: %d\n", tempseekloc);
+//
                     // saving blocklocation for deletion ltr
                     fileStartingBlockLocation[fileHandleCounter] = tempseekloc;
                     // saving handlearr for deletion ltr
@@ -168,7 +164,7 @@ int main() {
 
                     // populating the storage arr with data
                     for (int adding = 0; adding < sizeOfFile; ++adding) {
-                        storage[tempseekloc] = fileHandle + adding;
+                        storage[tempseekloc] = fileHandle + adding+1;
                         tempseekloc++;
                     }
 
@@ -248,18 +244,27 @@ int main() {
             if (fileNotFound == 1) {
                 printf("File not found\n");
             }
-//             DISPLAY ARRAY
-//            printf("______________\n");
-//            for (int m = 0; m < 256; ++m) {
-//
-//                printf("%d\n", storage[m]);
-//
-//            }
+
 
         }
 
+//             DISPLAY ARRAY
+        printf("_____DISPLAY 256 Array_____\n");
+        int displaycounter = 0;
+        for (int m = 0; m < 256; ++m) {
+            if (displaycounter == blockSize) {
+                printf("\n");
+                displaycounter = 0;
+            }
+            printf("%d ", storage[m]);
 
+            displaycounter++;
+        }
+        printf("\n");
+        printf("_____DISPLAY End Of 256 Array_____\n");
     }
+
+
     if (strstr(userInput, "-1")) {
         printf("Terminated by User\n");
     }
