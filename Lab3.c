@@ -5,7 +5,6 @@
 #define MAX_NAME_SZ 256
 
 int main() {
-
     // init data
     int storage[256];
     int blockLocations[256];
@@ -15,7 +14,6 @@ int main() {
     // init temp variables
     int fileHandleArr[255], fileSize[255], fileStartingBlockLocation[255];
     int fileHandleCounter = 0;
-
 
     int tempBlockLocationCounter = 0;
     char *userInput = malloc(MAX_NAME_SZ);
@@ -32,8 +30,6 @@ int main() {
     printf("Please key in the block size: \n");
     scanf("%d", &blockSize);
 
-
-
     // how many times to loop to cauclate the locations of the blocks size
     timesToLoop = (256 / blockSize);
 
@@ -42,7 +38,6 @@ int main() {
         blockLocations[i] = tempBlockLocationCounter;
         tempBlockLocationCounter += blockSize;
     }
-
 
     printf("Number of block = %d\n", timesToLoop);
     fgets(userInput, MAX_NAME_SZ, stdin);
@@ -62,9 +57,7 @@ int main() {
         if ((strlen(userInput) > 0) && (userInput[strlen(userInput) - 1] == '\n'))
             userInput[strlen(userInput) - 1] = '\0';
 
-
         userInputLen = strlen(userInput);
-
 
         // if string contains add
         if (strstr(userInput, "add")) {
@@ -80,25 +73,21 @@ int main() {
             }
             // getting the 2 int
             // first int
-
             int firstemp = 0;
             int secondtemp = 0;
             firstInt = malloc((indexOfSpace[1] - indexOfSpace[0]));
             secondInt = malloc((userInputLen - indexOfSpace[1]));
 
-
             // concat first int char
             for (int k = (indexOfSpace[0] + 1); k < (indexOfSpace[1]); ++k) {
                 firstInt[firstemp] = userInput[k];
                 firstemp++;
-
             }
 
             // concat second int char
             for (int l = (indexOfSpace[1] + 1); l < userInputLen; ++l) {
                 secondInt[secondtemp] = userInput[l];
                 secondtemp++;
-
             }
 
             // setting null termiator at the end
@@ -115,7 +104,6 @@ int main() {
                 timesToLoopDueToSizeReq++;
             }
 
-
             int seekloop = timesToLoopDueToSizeReq * blockSize;
             int currentSeekLocation = 0;
             int outofspace = 0;
@@ -124,8 +112,6 @@ int main() {
             int seektimes = 256 / blockSize;
             for (int j = 0; j < seektimes; ++j) {
                 int boolFirstAvalLocation = 0;
-
-
 
                 // MAIN LOGIC
                 // for every block size, e.g. blocsize 2, it will check from 0+k(where k is size of file)
@@ -142,26 +128,19 @@ int main() {
                 }
                 currentSeekLocation += blockSize;
 
-
-
-
-
                 // continuing from above example, if the space if any 16 blocks is empty
                 // tempseekloc will be the starting location of the empty blocks are
                 if (boolFirstAvalLocation == 0) {
-
                     // must keep setting out of space to 0. wont affect as there is a break
                     outofspace = 0;
 
                     int tempseekloc = currentSeekLocation - blockSize;
-//
                     // saving blocklocation for deletion ltr
                     fileStartingBlockLocation[fileHandleCounter] = tempseekloc;
                     // saving handlearr for deletion ltr
                     fileHandleArr[fileHandleCounter] = fileHandle;
                     // saving filesize for deletion ltr
                     fileSize[fileHandleCounter] = sizeOfFile;
-
                     // populating the storage arr with data
                     for (int adding = 0; adding < sizeOfFile; ++adding) {
                         storage[tempseekloc] = fileHandle + adding+1;
@@ -174,22 +153,15 @@ int main() {
                     // break; when data is inputted, get out of loop
                     break;
                 }
-
-                // todo: when out of space
                 outofspace = 1;
             }
 
+            // end program when out of space
             if (outofspace == 1) {
                 printf("Disk is FULL. End of program\n");
                 break;
             }
-            // debug array print
-//            printf("______________\n");
-//            for (int m = 0; m < 256; ++m) {
-//
-//                printf("%d\n", storage[m]);
-//
-//            }
+
 
         } else if (strstr(userInput, "delete")) {
 
@@ -214,40 +186,30 @@ int main() {
                 concatCounter++;
 
             }
-
             // convert *char to int
             fileHandleDelete[userInputLen - userDeleteInputSpaceIndex] = '\0';
             intfileHandleDelete = atoi(fileHandleDelete);
-
             // temp variables
             int fileNotFound = 0;
             // loop thru all the file handles
             for (int j = 0; j < fileHandleCounter; ++j) {
-
                 // if file handle matches what to be deleted
                 if (fileHandleArr[j] == intfileHandleDelete) {
                     fileNotFound = 0;
                     fileHandleArr[j] = 0;
                     printf("Deleted Sucessfully\n");
-//                    printf("fileStartingBlockLocation: %d\n", fileStartingBlockLocation[j]);
-//                    printf("File Size: %d\n", fileSize[j]);
                     for (int i = 0; i < fileSize[j]; ++i) {
                         storage[fileStartingBlockLocation[j] + i] = 0;
 
                     }
-
                     break;
-
                 }
                 fileNotFound = 1;
             }
             if (fileNotFound == 1) {
                 printf("File not found\n");
             }
-
-
         }
-
 //             DISPLAY ARRAY
         printf("_____DISPLAY 256 Array_____\n");
         int displaycounter = 0;
@@ -263,11 +225,8 @@ int main() {
         printf("\n");
         printf("_____DISPLAY End Of 256 Array_____\n");
     }
-
-
     if (strstr(userInput, "-1")) {
         printf("Terminated by User\n");
     }
-
 
 }
