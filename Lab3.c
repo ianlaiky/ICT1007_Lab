@@ -133,17 +133,25 @@ int main() {
 
 
 
-                    // seeking total amount of times in blocks size, example,
-                    // if sizeinput is 13, blocksize is 8, will loop 16 times
-                    for (int i = 0; i < blockSize; ++i) {
-                        for (int k = 0; k < sizeOfFile; ++k) {
-                            if (storage[currentSeekLocation+k] != 0) {
-                                boolFirstAvalLocation = 1;
-                            }
-                            if(boolFirstAvalLocation==0){break;}
+                // seeking total amount of times in blocks size, example,
+                // if sizeinput is 13, blocksize is 8, will loop 16 times
+                for (int i = 0; i < blockSize; ++i) {
+                    for (int k = 0; k < sizeOfFile; ++k) {
+
+
+                        if (storage[currentSeekLocation + k] != 0) {
+                            boolFirstAvalLocation = 1;
+
                         }
-                        currentSeekLocation++;
+
                     }
+                    if ((int) (currentSeekLocation + sizeOfFile) > 256) {
+
+                        boolFirstAvalLocation = 1;
+                        break;
+                    }
+                    currentSeekLocation++;
+                }
 
 
 
