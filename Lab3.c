@@ -26,9 +26,17 @@ int main() {
     for (int k = 0; k < 256; ++k) {
         storage[k] = 0;
     }
+    int blocksizebool = 0;
+    do {
+        printf("Please key in the block size: \n");
+        scanf("%d", &blockSize);
+        if (blockSize == 1 || blockSize == 2 || blockSize == 4 || blockSize == 8 || blockSize == 16 ||
+            blockSize == 32 ||
+            blockSize == 64 || blockSize == 128 || blockSize == 256) {
+            blocksizebool = 1;
+        }
 
-    printf("Please key in the block size: \n");
-    scanf("%d", &blockSize);
+    } while (blocksizebool == 0);
 
     // how many times to loop to cauclate the locations of the blocks size
     timesToLoop = (256 / blockSize);
