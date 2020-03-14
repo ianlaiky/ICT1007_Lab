@@ -26,32 +26,43 @@ int insert_item(buffer_item item) {
 }
 
 int remove_item(buffer_item *item) {
+    int returntype = -1;
+    int tosave=  -1;
+    item = (buffer_item *) tosave;
 /* remove an object from buffer placing it in item */
-    int randomno = rand() % 50;
-    printf("consumer consumed %d\n", randomno);
+    for (int i = 0; i < BUFFERSIZE; ++i) {
+        if (buffer[i] != 0) {
+            tosave = (int *) buffer[i];
+            returntype = 0;
+            break;
+        }
+    }
+    item = (buffer_item *) tosave;
+    printf("consumer consumed %d\n", tosave);
 /* return 0 if successful, otherwise, return -1 indicating an error condition */
+    return returntype;
 }
+
 
 // producer thread
 void *producer(void *param) {
     buffer_item item;
     while (1) {
-        printf("test run\n");
         sleep(rand() % 50); /* sleep for a random period of time */
         item = rand(); /* generate a random number */
 
         if (insert_item(item) < 0)
-            printf("…"); /* report error condition */
+            printf("Error: Buffer is full\n"); /* report error condition */
     }
 }
 
-////consumer thread
+//consumer thread
 void *consumer(void *param) {
     buffer_item item;
     while (1) {
-        sleep(rand()%50); /* sleep for a random period of time */
-        if (remove item(&item) < 0)
-        printf("…"); /* report error condition */
+        sleep(rand() % 50); /* sleep for a random period of time */
+        if (remove_item(&item) < 0)
+            printf("Error: NO item to consume\n"); /* report error condition */
     }
 }
 
@@ -60,6 +71,12 @@ void *thread_entry_producer(void *param) { /* entry point of a new thread */
     printf("thread created\n");
 
     producer(NULL);
+}
+
+void *thread_entry_consumer(void *param) { /* entry point of a new thread */
+    printf("thread created\n");
+
+    consumer(NULL);
 }
 
 int main(int argc, char *argv[]) {
@@ -99,6 +116,12 @@ int main(int argc, char *argv[]) {
     }
 
 /* 4. Create consumer thread(s) */
+    for (int i = 0; i < no_consumer_threads; ++i) {
+        pthread_t tid;
+        pthread_attr_t attr;
+        pthread_attr_init(&attr); /* get the default attribute */
+        pthread_create(&tid, &attr, thread_entry_consumer, NULL);
+    }
 /* 5. Sleep */
     sleep(time_to_sleep);
 /* 6. Release resources, e.g. destroy semaphores */
