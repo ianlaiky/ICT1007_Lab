@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "buffer.h"
 #include <stdlib.h>/* required for rand() */
+#include <pthread.h>
 
 /* the buffer */
 buffer_item buffer[BUFFERSIZE];
@@ -13,31 +14,36 @@ int insert_item(buffer_item item) {
 
 int remove_item(buffer_item *item) {
 /* remove an object from buffer placing it in item */
-    printf("consumer consumed %d\n", rand);
+    int randomno = rand() % 50;
+    printf("consumer consumed %d\n", randomno);
 /* return 0 if successful, otherwise, return -1 indicating an error condition */
 }
 
 // producer thread
-//void *producer(void *param) {
-//    buffer_item item;
-//    while (1) {
-//        sleep(...); /* sleep for a random period of time */
-//        item = rand(); /* generate a random number */
-//        if (insert_item(item) < 0)
-//            printf("…"); /* report error condition */
-//    }
-//}
-//
+void *producer(void *param) {
+    buffer_item item;
+    while (1) {
+        _sleep(rand); /* sleep for a random period of time */
+        item = rand(); /* generate a random number */
+        if (insert_item(item) < 0)
+            printf("…"); /* report error condition */
+    }
+}
+
 ////consumer thread
 //void *consumer(void *param) {
 //    buffer_item item;
 //    while (1) {
-//        sleep(...); /* sleep for a random period of time */
+//        _sleep(rand); /* sleep for a random period of time */
 //        if (remove item(&item) < 0)
 //        printf("…"); /* report error condition */
 //    }
 //}
 
+// pthreads
+void *thread_entry(void *param) { /* entry point of a new thread */
+    ...
+}
 
 int main(int argc, char *argv[]) {
 /* 1. Get command line arguments argv[1], argv[2], argv[3] */
@@ -62,8 +68,17 @@ int main(int argc, char *argv[]) {
     // buffer has been defined in header file
     int mutex = 1, full = 0, empty = BUFFERSIZE;
 
-    printf("random No:%d\n",rand);
+//    printf("random No:%d\n", rand() % 50);
+//    printf("random No:%d\n", rand() % 50);
+//    printf("random No:%d\n", rand() % 50);
+
 /* 3. Create producer thread(s) */
+    for (int i = 0; i < no_producer_threads; ++i) {
+        pthread_t tid;
+        pthread_attr_t attr;
+        pthread_attr_init(&attr); /* get the default attribute */
+        pthread_create(&tid, &attr, thread_entry, NULL);
+    }
 
 /* 4. Create consumer thread(s) */
 /* 5. Sleep */
