@@ -5,9 +5,6 @@
 #include <unistd.h>
 #include <semaphore.h>
 
-// todo delete later
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
 /* the buffer */
 buffer_item buffer[BUFFERSIZE];
 
@@ -19,9 +16,13 @@ int insert_item(buffer_item item) {
     int returntype = -1;
 /* insert item into buffer */
     printf("producer produced %d\n", item);
+
+    // loop to insert data when there is no 0 in the index
     for (int i = 0; i < BUFFERSIZE; ++i) {
         if (buffer[i] == 0) {
+            // set the buffer[i] to random data
             buffer[i] = item;
+            // set to success
             returntype = 0;
             break;
         }
@@ -31,21 +32,26 @@ int insert_item(buffer_item item) {
 }
 
 int remove_item(buffer_item *item) {
+
     int returntype = -1;
     int tosave = -1;
 
 /* remove an object from buffer placing it in item */
+// loop the buffer to get the resource
     for (int i = 0; i < BUFFERSIZE; ++i) {
         if (buffer[i] != 0) {
-
+            // save resource to tosave
             tosave = buffer[i];
+            // set the index value to 0
             buffer[i] = 0;
+
+            // set return to success
             returntype = 0;
             break;
         }
     }
     item = &tosave;
-    if(*item!=-1){
+    if (*item != -1) {
         printf("consumer consumed %d\n", *item);
     }
 
@@ -60,13 +66,13 @@ void *producer(void *param) {
     while (1) {
 
         sleep(rand() % 50); /* sleep for a random period of time */
-        sem_wait(&sem_mutex);
+        sem_wait(&sem_mutex);/* create the semaphore */
         item = rand(); /* generate a random number */
 
         if (insert_item(item) < 0)
             printf("Error: Buffer is full\n"); /* report error condition */
 
-        sem_post(&sem_mutex);
+        sem_post(&sem_mutex);/* release the semaphore */
     }
 
 
@@ -78,11 +84,11 @@ void *consumer(void *param) {
     while (1) {
 
         sleep(rand() % 50); /* sleep for a random period of time */
-        sem_wait(&sem_mutex);
+        sem_wait(&sem_mutex); /* acquire the semaphore */
         if (remove_item(&item) < 0)
             printf("Error: NO item to consume\n"); /* report error condition */
 
-        sem_post(&sem_mutex);
+        sem_post(&sem_mutex); /* release the semaphore */
     }
 
 
@@ -116,9 +122,9 @@ int main(int argc, char *argv[]) {
     } else {
         printf("Three argument expected.\n");
     }
-    printf("The 1 argument supplied is %d\n", time_to_sleep);
-    printf("The 2 argument supplied is %d\n", no_producer_threads);
-    printf("The 3 argument supplied is %d\n", no_consumer_threads);
+    printf("Time to sleep is %d\n", time_to_sleep);
+    printf("No Producer threads is %d\n", no_producer_threads);
+    printf("No Consumer threads is %d\n", no_consumer_threads);
 
     /* 2. Initialize buffer, mutex, semaphores, other global vars */
     // buffer has been defined in header file
@@ -153,6 +159,3 @@ int main(int argc, char *argv[]) {
 /* 7. Exit */
     exit(0);
 }
-
-//todo delete later
-#pragma clang diagnostic pop
