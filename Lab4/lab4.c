@@ -42,7 +42,6 @@ int remove_item(buffer_item *item) {
             tosave = buffer[i];
             // set the index value to 0
             buffer[i] = 0;
-
             // set return to success
             returntype = 0;
             break;
@@ -95,13 +94,11 @@ void *consumer(void *param) {
 // pthreads
 void *thread_entry_producer(void *param) { /* entry point of a new thread */
     printf("thread created producer\n");
-
     producer(NULL);
 }
 
 void *thread_entry_consumer(void *param) { /* entry point of a new thread */
     printf("thread created consumer\n");
-
     consumer(NULL);
 }
 
