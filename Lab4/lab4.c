@@ -32,10 +32,8 @@ int insert_item(buffer_item item) {
 }
 
 int remove_item(buffer_item *item) {
-
     int returntype = -1;
     int tosave = -1;
-
 /* remove an object from buffer placing it in item */
 // loop the buffer to get the resource
     for (int i = 0; i < BUFFERSIZE; ++i) {
