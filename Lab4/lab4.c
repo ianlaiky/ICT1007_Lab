@@ -3,6 +3,7 @@
 #include <stdlib.h>/* required for rand() */
 #include <pthread.h>
 #include <unistd.h>
+#include <semaphore.h>
 
 // todo delete later
 #pragma clang diagnostic push
@@ -10,12 +11,16 @@
 /* the buffer */
 buffer_item buffer[BUFFERSIZE];
 
+//creating the semaphore as global var
+sem_t sem_mutex;
+
+
 int insert_item(buffer_item item) {
     int returntype = -1;
 /* insert item into buffer */
     printf("producer produced %d\n", item);
     for (int i = 0; i < BUFFERSIZE; ++i) {
-        if (buffer[i] != 0) {
+        if (buffer[i] == 0) {
             buffer[i] = item;
             returntype = 0;
             break;
@@ -27,18 +32,23 @@ int insert_item(buffer_item item) {
 
 int remove_item(buffer_item *item) {
     int returntype = -1;
-    int tosave=  -1;
-    item = (buffer_item *) tosave;
+    int tosave = -1;
+
 /* remove an object from buffer placing it in item */
     for (int i = 0; i < BUFFERSIZE; ++i) {
         if (buffer[i] != 0) {
-            tosave = (int *) buffer[i];
+
+            tosave = buffer[i];
+            buffer[i] = 0;
             returntype = 0;
             break;
         }
     }
-    item = (buffer_item *) tosave;
-    printf("consumer consumed %d\n", tosave);
+    item = &tosave;
+    if(*item!=-1){
+        printf("consumer consumed %d\n", *item);
+    }
+
 /* return 0 if successful, otherwise, return -1 indicating an error condition */
     return returntype;
 }
@@ -48,33 +58,45 @@ int remove_item(buffer_item *item) {
 void *producer(void *param) {
     buffer_item item;
     while (1) {
+
         sleep(rand() % 50); /* sleep for a random period of time */
+        sem_wait(&sem_mutex);
         item = rand(); /* generate a random number */
 
         if (insert_item(item) < 0)
             printf("Error: Buffer is full\n"); /* report error condition */
+
+        sem_post(&sem_mutex);
     }
+
+
 }
 
 //consumer thread
 void *consumer(void *param) {
     buffer_item item;
     while (1) {
+
         sleep(rand() % 50); /* sleep for a random period of time */
+        sem_wait(&sem_mutex);
         if (remove_item(&item) < 0)
             printf("Error: NO item to consume\n"); /* report error condition */
+
+        sem_post(&sem_mutex);
     }
+
+
 }
 
 // pthreads
 void *thread_entry_producer(void *param) { /* entry point of a new thread */
-    printf("thread created\n");
+    printf("thread created producer\n");
 
     producer(NULL);
 }
 
 void *thread_entry_consumer(void *param) { /* entry point of a new thread */
-    printf("thread created\n");
+    printf("thread created consumer\n");
 
     consumer(NULL);
 }
@@ -101,6 +123,8 @@ int main(int argc, char *argv[]) {
     /* 2. Initialize buffer, mutex, semaphores, other global vars */
     // buffer has been defined in header file
     int mutex = 1, full = 0, empty = BUFFERSIZE;
+    // init the semaphore
+    sem_init(&sem_mutex, 0, 1);
 
     // set each of index in buffer to 0
     for (int j = 0; j < BUFFERSIZE; ++j) {
@@ -125,7 +149,9 @@ int main(int argc, char *argv[]) {
 /* 5. Sleep */
     sleep(time_to_sleep);
 /* 6. Release resources, e.g. destroy semaphores */
+    sem_destroy(&sem_mutex);
 /* 7. Exit */
+    exit(0);
 }
 
 //todo delete later
