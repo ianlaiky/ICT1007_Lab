@@ -13,11 +13,13 @@ sem_t sem_mutex;
 sem_t sem_full;
 sem_t sem_empty;
 
+// producer and consumer counter
+int producer_id = 0, consumer_id = 0;
 
-int insert_item(buffer_item item) {
+int insert_item(buffer_item item, int pid) {
     int returntype = -1;
 /* insert item into buffer */
-    printf("producer produced %d\n", item);
+    printf("producer %d produced %d\n", pid, item);
 
     // loop to insert data when there is no 0 in the index
     for (int i = 0; i < BUFFERSIZE; ++i) {
@@ -33,17 +35,32 @@ int insert_item(buffer_item item) {
     return returntype;
 }
 
-int remove_item(buffer_item *item) {
+int remove_item(buffer_item *item, int pid) {
     int returntype = -1;
     int tosave = -1;
 /* remove an object from buffer placing it in item */
 // loop the buffer to get the resource
     for (int i = 0; i < BUFFERSIZE; ++i) {
         if (buffer[i] != 0) {
+
+            printf("Buffer: ");
+            for (int k = 0; k < BUFFERSIZE; ++k) {
+                printf("%d ", buffer[k]);
+            }
+            printf("\n");
+
             // save resource to tosave
             tosave = buffer[i];
             // set the index value to 0
             buffer[i] = 0;
+
+            // move all data left by 1
+            for (int j = 0; j < BUFFERSIZE-1; ++j) {
+                buffer[j]=buffer[j+1];
+            }
+            buffer[BUFFERSIZE-1]=0;
+
+
             // set return to success
             returntype = 0;
             break;
@@ -51,8 +68,17 @@ int remove_item(buffer_item *item) {
     }
     item = &tosave;
     if (*item != -1) {
-        printf("consumer consumed %d\n", *item);
+        printf("consumer %d consumed %d\n", pid, *item);
     }
+
+    // display buffer len
+    int emptycounter=0;
+    for (int l = 0; l < BUFFERSIZE; ++l) {
+        if(buffer[l]!=0){
+            emptycounter++;
+        }
+    }
+    printf("Buffer Len: %d\n",emptycounter);
 
 /* return 0 if successful, otherwise, return -1 indicating an error condition */
     return returntype;
@@ -60,7 +86,7 @@ int remove_item(buffer_item *item) {
 
 
 // producer thread
-void *producer(void *param) {
+void *producer(int pid) {
     buffer_item item;
     while (1) {
 
@@ -70,7 +96,7 @@ void *producer(void *param) {
         sem_wait(&sem_mutex);/* create the semaphore */
         item = rand(); /* generate a random number */
 
-        if (insert_item(item) < 0)
+        if (insert_item(item, pid) < 0)
             printf("Error: Buffer is full\n"); /* report error condition */
 
         sem_post(&sem_mutex);/* release the semaphore */
@@ -81,7 +107,7 @@ void *producer(void *param) {
 }
 
 //consumer thread
-void *consumer(void *param) {
+void *consumer(int pid) {
     buffer_item item;
     while (1) {
 
@@ -90,7 +116,7 @@ void *consumer(void *param) {
 
         sem_wait(&sem_full); /* acquire the semaphore from full which is added by producer*/
         sem_wait(&sem_mutex); /* acquire the semaphore for accessing critical section*/
-        if (remove_item(&item) < 0)
+        if (remove_item(&item, pid) < 0)
             printf("Error: NO item to consume\n"); /* report error condition */
 
         sem_post(&sem_mutex); /* release the semaphore */
@@ -103,13 +129,19 @@ void *consumer(void *param) {
 
 // pthreads
 void *thread_entry_producer(void *param) { /* entry point of a new thread */
-    printf("thread created producer\n");
-    producer(NULL);
+    // saving pid
+    int local_pid = producer_id;
+    producer_id++;
+    printf("thread created producer %d\n", local_pid);
+    producer(local_pid);
 }
 
 void *thread_entry_consumer(void *param) { /* entry point of a new thread */
-    printf("thread created consumer\n");
-    consumer(NULL);
+    // saving pid
+    int local_pid = consumer_id;
+    consumer_id++;
+    printf("thread created consumer %d\n", local_pid);
+    consumer(local_pid);
 }
 
 int main(int argc, char *argv[]) {
