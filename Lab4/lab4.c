@@ -10,6 +10,8 @@ buffer_item buffer[BUFFERSIZE];
 
 //creating the semaphore as global var
 sem_t sem_mutex;
+sem_t sem_full;
+sem_t sem_empty;
 
 
 int insert_item(buffer_item item) {
@@ -63,6 +65,8 @@ void *producer(void *param) {
     while (1) {
 
         sleep(rand() % 50); /* sleep for a random period of time */
+
+        sem_wait(&sem_empty); // acquire semaphore for the buffersize
         sem_wait(&sem_mutex);/* create the semaphore */
         item = rand(); /* generate a random number */
 
@@ -70,6 +74,7 @@ void *producer(void *param) {
             printf("Error: Buffer is full\n"); /* report error condition */
 
         sem_post(&sem_mutex);/* release the semaphore */
+        sem_post(&sem_full); /* add one to the full for the consumer */
     }
 
 
@@ -81,11 +86,16 @@ void *consumer(void *param) {
     while (1) {
 
         sleep(rand() % 50); /* sleep for a random period of time */
-        sem_wait(&sem_mutex); /* acquire the semaphore */
+
+
+        sem_wait(&sem_full); /* acquire the semaphore from full which is added by producer*/
+        sem_wait(&sem_mutex); /* acquire the semaphore for accessing critical section*/
         if (remove_item(&item) < 0)
             printf("Error: NO item to consume\n"); /* report error condition */
 
         sem_post(&sem_mutex); /* release the semaphore */
+        sem_post(&sem_empty); /* add one to empty which is the buffer empty space */
+
     }
 
 
@@ -126,6 +136,8 @@ int main(int argc, char *argv[]) {
     int mutex = 1, full = 0, empty = BUFFERSIZE;
     // init the semaphore
     sem_init(&sem_mutex, 0, 1);
+    sem_init(&sem_full, 0, 0);
+    sem_init(&sem_empty, 0, BUFFERSIZE);
 
     // set each of index in buffer to 0
     for (int j = 0; j < BUFFERSIZE; ++j) {
