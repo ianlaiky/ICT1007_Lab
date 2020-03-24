@@ -16,7 +16,7 @@ int main() {
 
     scanf("%d", &pageFrame);
 
-    printf("Enter reference string:(Include a space between pages E.g. 1 2 1 0) \n", userInput);
+    printf("Enter reference string:(Include a space between pages E.g. 1 2 1 0) \n");
 
 
     // to clear the input from scanf
