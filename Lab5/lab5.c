@@ -30,7 +30,7 @@ int main() {
         if (*pch != 10) {
             int inter = atoi(pch);
 
-
+            // check if data exists in array
             int pagefaultchck = 0;
             for (int i = 0; i < pageFrame; ++i) {
                 if (framearray[i] == inter) {
@@ -38,11 +38,12 @@ int main() {
                 }
             }
 
+            // if does not exists
             if (pagefaultchck == 0) {
-                pagefaultCounter++;
-                framearray[indexposition] = inter;
-                indexposition++;
-                if (indexposition + 1 == pageFrame) {
+                pagefaultCounter++; // add counter
+                framearray[indexposition] = inter; // save data to the array
+                indexposition++; // move index by one
+                if (indexposition + 1 == pageFrame) { // if index added is more than array size, move index pointer to 0
                     indexposition = 0;
                 }
             }
