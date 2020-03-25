@@ -27,6 +27,7 @@ int main() {
     // using strtok to delimit by space
     pch = strtok(userInput, " ");
     while (pch != NULL) {
+        // to ignore new line, ascii 10
         if (*pch != 10) {
             int inter = atoi(pch);
 
